@@ -1,0 +1,14 @@
+service : {
+  add_manager : (principal) -> (variant { Ok; Err : text });
+  list_managers : () -> (variant { Ok : vec principal; Err : text }) query;
+  remove_manager : (principal) -> (variant { Ok; Err : text });
+  create_language : (text, text, text, bool) -> (variant { Ok : text; Err : text });
+  create_languages : (vec record { text; text; text; bool }) -> (variant { Ok : vec text; Err : text });
+  delete_language : (text) -> (variant { Ok; Err : text });
+  get_languages : (opt bool) -> (vec record { language : text; language_code : text; country_code : text; enabled : bool; updated_at : nat64 }) query;
+  update_language : (text, opt text, opt text, opt text, opt bool) -> (variant { Ok; Err : text });
+  create_channel : (text, text, bool) -> (variant { Ok : text; Err : text });
+  create_channels : (vec record { text; text; bool }) -> (variant { Ok : vec text; Err : text });
+  delete_channel : (text, text) -> (variant { Ok; Err : text });
+  get_channels : (opt text) -> (vec record { name : text; platform : text; enabled : bool; updated_at : nat64 }) query;
+}

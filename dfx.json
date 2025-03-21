@@ -1,0 +1,16 @@
+{
+  "canisters": {
+    "ic-news-manager": {
+      "candid": "lib.did",
+      "package": "ic-news-manager",
+      "type": "rust"
+    }
+  },
+  "defaults": {
+    "build": {
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 2
+}
