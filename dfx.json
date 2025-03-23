@@ -1,9 +1,14 @@
 {
   "canisters": {
-    "ic-news-manager": {
+    "ic-news-market": {
       "candid": "lib.did",
-      "package": "ic-news-manager",
-      "type": "rust"
+      "package": "ic-news-market",
+      "type": "rust",
+      "metadata": [
+        {
+          "name": "candid:service"
+        }
+      ]
     }
   },
   "defaults": {
