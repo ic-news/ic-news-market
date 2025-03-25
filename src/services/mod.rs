@@ -2,7 +2,7 @@ use ic_cdk_macros::*;
 use crate::models::{Listing, Quote, Platform};
 use crate::storage::STORAGE;
 use crate::auth::is_manager_or_admin;
-use ic_cdk::println;
+use regex::Regex;
 
 #[update]
 pub fn upsert_listing(args: Listing) -> Result<(), String> {
@@ -11,10 +11,8 @@ pub fn upsert_listing(args: Listing) -> Result<(), String> {
     STORAGE.with(|storage| {
         let mut storage = storage.borrow_mut();
         let symbol = args.symbol.to_uppercase();
-        println!("Attempting to upsert listing for symbol: {}", symbol);
 
         if let Some(existing_listing) = storage.listings.get_mut(&symbol) {
-            println!("Updating existing listing for symbol: {}", symbol);
             existing_listing.name = args.name;
             existing_listing.slug = args.slug;
             existing_listing.cmc_rank = args.cmc_rank;
@@ -74,10 +72,8 @@ pub fn upsert_listing(args: Listing) -> Result<(), String> {
                 },
                 last_updated: args.last_updated,
             };
-            println!("Inserting new listing for symbol: {}", symbol);
             storage.listings.insert(symbol, listing);
         }
-        println!("Current listings count after upsert: {}", storage.listings.len());
         Ok(())
     })
 }
@@ -93,7 +89,6 @@ pub fn upsert_listings(args: Vec<Listing>) -> Result<(), String> {
             let symbol = arg.symbol.to_uppercase();
 
             if let Some(existing_listing) = storage.listings.get_mut(&symbol) {
-                println!("Updating listing for symbol: {}", symbol.clone());
                 existing_listing.name = arg.name;
                 existing_listing.slug = arg.slug;
                 existing_listing.cmc_rank = arg.cmc_rank;
@@ -155,10 +150,8 @@ pub fn upsert_listings(args: Vec<Listing>) -> Result<(), String> {
                     last_updated: arg.last_updated,
                 };
                 storage.listings.insert(symbol.clone(), listing);
-                println!("Inserted new listing for symbol: {}", symbol);
             }
         }
-        println!("Current listings count: {}", storage.listings.len());
         Ok(())
     })
 }
@@ -169,17 +162,14 @@ pub fn get_listing(symbol: String) -> Option<Listing> {
     STORAGE.with(|storage| {
         let s = storage.borrow();
         let keys = s.listings.keys().collect::<Vec<_>>();
-        println!("Querying symbol: {}, available keys: {:?}", symbol, keys);
         let result = s.listings.get(&symbol);
-        println!("Raw get result for {}: {:?}", symbol, result);
         let cloned_result = result.cloned();
-        println!("Cloned result for {}: {:?}", symbol, cloned_result);
         cloned_result
     })
 }
 
 #[query]
-pub fn get_listings(limit: Option<u64>, offset: Option<u64>) -> Vec<Listing> {
+pub fn get_listings(limit: Option<u64>, offset: Option<u64>, exclude_stablecoins: Option<bool>) -> Vec<Listing> {
     // Process parameters
     let real_limit = match limit {
         Some(l) => {
@@ -195,11 +185,26 @@ pub fn get_listings(limit: Option<u64>, offset: Option<u64>) -> Vec<Listing> {
         None => 20, // If not specified, default return 20 items
     };
     let real_offset = offset.map(|o| o as usize).unwrap_or(0);
-    
-    ic_cdk::println!("get_listings with effective limit: {}, offset: {}", real_limit, real_offset);
+    let should_exclude_stablecoins = exclude_stablecoins.unwrap_or(true);
     
     STORAGE.with(|storage| {
+        // Get all listings
         let mut listings: Vec<Listing> = storage.borrow().listings.values().cloned().collect();
+        
+        // Filter out stablecoins if needed
+        if should_exclude_stablecoins {
+            // Create regex pattern for stablecoins
+            // This pattern matches symbols that contain 'usd' in any position or case,
+            // as well as other common stablecoin identifiers
+            let stablecoin_regex = Regex::new(r"(?i)(.*usd.*|dai|usdt|usdc)").unwrap();
+            
+            listings = listings.into_iter()
+                .filter(|listing| {
+                    // Check if the symbol matches the stablecoin pattern
+                    !stablecoin_regex.is_match(&listing.symbol)
+                })
+                .collect();
+        }
         
         // Sort by cmc_rank (ascending order, lower rank is better)
         listings.sort_by(|a, b| a.cmc_rank.cmp(&b.cmc_rank));
@@ -214,7 +219,6 @@ pub fn get_listings(limit: Option<u64>, offset: Option<u64>) -> Vec<Listing> {
         
         // Extract listings within specified range
         let result = listings[real_offset..end_index].to_vec();
-        ic_cdk::println!("Returning {} listings", result.len());
         
         result
     })

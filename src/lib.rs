@@ -9,6 +9,9 @@ mod storage;
 mod auth;
 mod services;
 
+#[cfg(test)]
+mod tests;
+
 #[init]
 fn init() {
     ic_cdk::setup();

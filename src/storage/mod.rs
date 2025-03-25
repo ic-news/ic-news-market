@@ -35,7 +35,6 @@ pub fn post_upgrade() {
             });
         }
         Err(e) => {
-            ic_cdk::println!("Failed to restore state: {:?}. Initializing with default.", e);
             STORAGE.with(|storage| {
                 *storage.borrow_mut() = Storage::default();
             });

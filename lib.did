@@ -49,6 +49,6 @@ service : {
     upsert_listing: (Listing) -> (variant { Ok; Err: text });
     upsert_listings: (vec Listing) -> (variant { Ok; Err: text });
     get_listing: (text) -> (opt Listing) query;
-    get_listings: (opt nat, opt nat) -> (vec Listing) query;
+    get_listings: (opt nat, opt nat, opt bool) -> (vec Listing) query;
     delete_listing: (text) -> (variant { Ok; Err: text });
 }
