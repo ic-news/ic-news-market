@@ -22,17 +22,12 @@ pub fn upsert_listing(args: Listing) -> Result<(), String> {
             existing_listing.max_supply = args.max_supply;
             existing_listing.infinite_supply = args.infinite_supply;
             existing_listing.date_added = args.date_added;
-            existing_listing.tags = args.tags;
             existing_listing.platform = args.platform;
-            existing_listing.self_reported_circulating_supply = args.self_reported_circulating_supply;
-            existing_listing.self_reported_market_cap = args.self_reported_market_cap;
 
             existing_listing.quote.price = args.quote.price;
             existing_listing.quote.volume_24h = args.quote.volume_24h;
             existing_listing.quote.volume_change_24h = args.quote.volume_change_24h;
-            existing_listing.quote.percent_change_1h = args.quote.percent_change_1h;
             existing_listing.quote.percent_change_24h = args.quote.percent_change_24h;
-            existing_listing.quote.percent_change_7d = args.quote.percent_change_7d;
             existing_listing.quote.market_cap = args.quote.market_cap;
             existing_listing.quote.market_cap_dominance = args.quote.market_cap_dominance;
             existing_listing.quote.fully_diluted_market_cap = args.quote.fully_diluted_market_cap;
@@ -51,20 +46,12 @@ pub fn upsert_listing(args: Listing) -> Result<(), String> {
                 max_supply: args.max_supply,
                 infinite_supply: args.infinite_supply,
                 date_added: args.date_added,
-                tags: args.tags,
                 platform: args.platform.map(|data| Platform { id: data.id, name: data.name, symbol: data.symbol, slug: data.slug, token_address: data.token_address }),
-                self_reported_circulating_supply: args.self_reported_circulating_supply,
-                self_reported_market_cap: args.self_reported_market_cap,
                 quote: Quote {
                     price: args.quote.price,
                     volume_24h: args.quote.volume_24h,
                     volume_change_24h: args.quote.volume_change_24h,
-                    percent_change_1h: args.quote.percent_change_1h,
                     percent_change_24h: args.quote.percent_change_24h,
-                    percent_change_7d: args.quote.percent_change_7d,
-                    percent_change_30d: args.quote.percent_change_30d,
-                    percent_change_60d: args.quote.percent_change_60d,
-                    percent_change_90d: args.quote.percent_change_90d,
                     market_cap: args.quote.market_cap,
                     market_cap_dominance: args.quote.market_cap_dominance,
                     fully_diluted_market_cap: args.quote.fully_diluted_market_cap,
@@ -98,17 +85,12 @@ pub fn upsert_listings(args: Vec<Listing>) -> Result<(), String> {
                 existing_listing.max_supply = arg.max_supply;
                 existing_listing.infinite_supply = arg.infinite_supply;
                 existing_listing.date_added = arg.date_added;
-                existing_listing.tags = arg.tags;
                 existing_listing.platform = arg.platform;
-                existing_listing.self_reported_circulating_supply = arg.self_reported_circulating_supply;
-                existing_listing.self_reported_market_cap = arg.self_reported_market_cap;
 
                 existing_listing.quote.price = arg.quote.price;
                 existing_listing.quote.volume_24h = arg.quote.volume_24h;
                 existing_listing.quote.volume_change_24h = arg.quote.volume_change_24h;
-                existing_listing.quote.percent_change_1h = arg.quote.percent_change_1h;
                 existing_listing.quote.percent_change_24h = arg.quote.percent_change_24h;
-                existing_listing.quote.percent_change_7d = arg.quote.percent_change_7d;
                 existing_listing.quote.market_cap = arg.quote.market_cap;
                 existing_listing.quote.market_cap_dominance = arg.quote.market_cap_dominance;
                 existing_listing.quote.fully_diluted_market_cap = arg.quote.fully_diluted_market_cap;
@@ -128,20 +110,12 @@ pub fn upsert_listings(args: Vec<Listing>) -> Result<(), String> {
                     max_supply: arg.max_supply,
                     infinite_supply: arg.infinite_supply,
                     date_added: arg.date_added,
-                    tags: arg.tags,
                     platform: arg.platform.map(|data| Platform { id: data.id, name: data.name, symbol: data.symbol, slug: data.slug, token_address: data.token_address }),
-                    self_reported_circulating_supply: arg.self_reported_circulating_supply,
-                    self_reported_market_cap: arg.self_reported_market_cap,
                     quote: Quote {
                         price: arg.quote.price,
                         volume_24h: arg.quote.volume_24h,
                         volume_change_24h: arg.quote.volume_change_24h,
-                        percent_change_1h: arg.quote.percent_change_1h,
                         percent_change_24h: arg.quote.percent_change_24h,
-                        percent_change_7d: arg.quote.percent_change_7d,
-                        percent_change_30d: arg.quote.percent_change_30d,
-                        percent_change_60d: arg.quote.percent_change_60d,
-                        percent_change_90d: arg.quote.percent_change_90d,
                         market_cap: arg.quote.market_cap,
                         market_cap_dominance: arg.quote.market_cap_dominance,
                         fully_diluted_market_cap: arg.quote.fully_diluted_market_cap,

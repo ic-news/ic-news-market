@@ -1,0 +1,45 @@
+type Listing = record {
+  id : nat32;
+  num_market_pairs : nat32;
+  name : text;
+  slug : text;
+  quote : Quote;
+  last_updated : text;
+  cmc_rank : nat32;
+  platform : opt Platform;
+  circulating_supply : float64;
+  date_added : text;
+  max_supply : float64;
+  total_supply : float64;
+  symbol : text;
+  infinite_supply : bool;
+};
+type Platform = record {
+  id : nat32;
+  name : text;
+  slug : text;
+  token_address : text;
+  symbol : text;
+};
+type Quote = record {
+  market_cap : float64;
+  volume_change_24h : float64;
+  volume_24h : float64;
+  last_updated : text;
+  fully_diluted_market_cap : float64;
+  percent_change_24h : float64;
+  price : float64;
+  market_cap_dominance : float64;
+};
+type Result = variant { Ok; Err : text };
+type Result_1 = variant { Ok : vec principal; Err : text };
+service : () -> {
+  add_manager : (principal) -> (Result);
+  delete_listing : (text) -> (Result);
+  get_listing : (text) -> (opt Listing) query;
+  get_listings : (opt nat64, opt nat64, opt bool) -> (vec Listing) query;
+  list_managers : () -> (Result_1) query;
+  remove_manager : (principal) -> (Result);
+  upsert_listing : (Listing) -> (Result);
+  upsert_listings : (vec Listing) -> (Result);
+}

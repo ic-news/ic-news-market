@@ -10,12 +10,7 @@ type Quote = record {
     price: float64;
     volume_24h: float64;
     volume_change_24h: float64;
-    percent_change_1h: float64;
     percent_change_24h: float64;
-    percent_change_7d: float64;
-    percent_change_30d: float64;
-    percent_change_60d: float64;
-    percent_change_90d: float64;
     market_cap: float64;
     market_cap_dominance: float64;
     fully_diluted_market_cap: float64;
@@ -34,10 +29,7 @@ type Listing = record {
     max_supply: float64;
     infinite_supply: bool;
     date_added: text;
-    tags: vec text;
     platform: opt Platform;
-    self_reported_circulating_supply: float64;
-    self_reported_market_cap: float64;
     quote: Quote;
     last_updated: text;
 };
