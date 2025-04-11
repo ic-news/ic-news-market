@@ -1,7 +1,7 @@
 {
   "canisters": {
     "ic-news-market": {
-      "candid": "lib.did",
+      "candid": "./src/ic-news-market.did",
       "package": "ic-news-market",
       "type": "rust",
       "metadata": [

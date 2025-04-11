@@ -38,6 +38,7 @@ service : () -> {
   delete_listing : (text) -> (Result);
   get_listing : (text) -> (opt Listing) query;
   get_listings : (opt nat64, opt nat64, opt bool) -> (vec Listing) query;
+  get_listings_count : (opt bool) -> (nat64) query;
   list_managers : () -> (Result_1) query;
   remove_manager : (principal) -> (Result);
   upsert_listing : (Listing) -> (Result);

@@ -68,14 +68,21 @@ pub fn upsert_listing(args: Listing) -> Result<(), String> {
 #[update]
 pub fn upsert_listings(args: Vec<Listing>) -> Result<(), String> {
     is_manager_or_admin()?;
+    
+    // Add log for debugging
+    ic_cdk::println!("upsert_listings called with {} listings", args.len());
 
     STORAGE.with(|storage| {
         let mut storage = storage.borrow_mut();
 
-        for arg in args {
+        for (index, arg) in args.into_iter().enumerate() {
             let symbol = arg.symbol.to_uppercase();
+            
+            // Log each listing being processed
+            ic_cdk::println!("Processing listing {}: symbol={}", index + 1, symbol);
 
             if let Some(existing_listing) = storage.listings.get_mut(&symbol) {
+                ic_cdk::println!("Updating existing listing: {}", symbol);
                 existing_listing.name = arg.name;
                 existing_listing.slug = arg.slug;
                 existing_listing.cmc_rank = arg.cmc_rank;
@@ -98,6 +105,7 @@ pub fn upsert_listings(args: Vec<Listing>) -> Result<(), String> {
 
                 existing_listing.last_updated = arg.last_updated;
             } else {
+                ic_cdk::println!("Creating new listing: {}", symbol);
                 let listing = Listing {
                     id: arg.id,
                     symbol: arg.symbol.clone(),
@@ -119,13 +127,19 @@ pub fn upsert_listings(args: Vec<Listing>) -> Result<(), String> {
                         market_cap: arg.quote.market_cap,
                         market_cap_dominance: arg.quote.market_cap_dominance,
                         fully_diluted_market_cap: arg.quote.fully_diluted_market_cap,
-                        last_updated: arg.quote.last_updated,
+                        last_updated: arg.quote.last_updated.clone(),
                     },
-                    last_updated: arg.last_updated,
+                    last_updated: arg.last_updated.clone(),
                 };
                 storage.listings.insert(symbol.clone(), listing);
+                ic_cdk::println!("New listing inserted: {}", symbol);
             }
         }
+        
+        // Log the total count after operation
+        let count = storage.listings.len();
+        ic_cdk::println!("Operation completed. Total listings count: {}", count);
+        
         Ok(())
     })
 }
@@ -195,6 +209,35 @@ pub fn get_listings(limit: Option<u64>, offset: Option<u64>, exclude_stablecoins
         let result = listings[real_offset..end_index].to_vec();
         
         result
+    })
+}
+
+#[query]
+pub fn get_listings_count(exclude_stablecoins: Option<bool>) -> u64 {
+    // Process parameters
+    let should_exclude_stablecoins = exclude_stablecoins.unwrap_or(true);
+    
+    STORAGE.with(|storage| {
+        // Get all listings
+        let listings = storage.borrow().listings.values().cloned().collect::<Vec<Listing>>();
+        
+        // Filter out stablecoins if needed
+        if should_exclude_stablecoins {
+            // Create regex pattern for stablecoins
+            let stablecoin_regex = Regex::new(r"(?i)(.*usd.*|dai|usdt|usdc)").unwrap();
+            
+            let filtered_listings = listings.into_iter()
+                .filter(|listing| {
+                    // Check if the symbol matches the stablecoin pattern
+                    !stablecoin_regex.is_match(&listing.symbol)
+                })
+                .collect::<Vec<Listing>>();
+            
+            return filtered_listings.len() as u64;
+        }
+        
+        // Return total count if not filtering
+        listings.len() as u64
     })
 }
 
